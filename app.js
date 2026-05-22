@@ -4,6 +4,7 @@ const state = {
   selectedSemester: null,
   selectedCourse: null,
 };
+const MAX_SEARCH_RESULTS = 12;
 
 const ui = {
   loading: document.getElementById('loading'),
@@ -30,6 +31,7 @@ const ui = {
   crumbSemesterSep: document.getElementById('crumb-semester-sep'),
   crumbCourse: document.getElementById('crumb-course'),
   homeLink: document.getElementById('home-link'),
+  submitBtn: document.querySelector('#contact-form button[type=\"submit\"]'),
 };
 
 const escapeHtml = (text = '') => text
@@ -174,12 +176,23 @@ function renderFiles(course) {
 }
 
 function highlight(text, query) {
-  const safeText = escapeHtml(text);
-  if (!query.trim()) return safeText;
+  const value = String(text ?? '');
+  if (!query.trim()) return escapeHtml(value);
 
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`(${escaped})`, 'ig');
-  return safeText.replace(regex, '<mark>$1</mark>');
+  const regex = new RegExp(escaped, 'ig');
+  const parts = value.split(regex);
+  const matches = value.match(regex) || [];
+  let result = '';
+
+  for (let i = 0; i < parts.length; i += 1) {
+    result += escapeHtml(parts[i]);
+    if (i < matches.length) {
+      result += `<mark>${escapeHtml(matches[i])}</mark>`;
+    }
+  }
+
+  return result;
 }
 
 function renderSearchResults(query) {
@@ -195,7 +208,7 @@ function renderSearchResults(query) {
         .toLowerCase()
         .includes(q)
     ))
-    .slice(0, 12);
+    .slice(0, MAX_SEARCH_RESULTS);
 
   if (!matches.length) {
     ui.searchResults.innerHTML = '<p class="meta">No matching courses found.</p>';
@@ -227,6 +240,11 @@ async function handleFormSubmit(event) {
   event.preventDefault();
   ui.formStatus.textContent = 'Sending...';
 
+  if (ui.contactForm.action.endsWith('#')) {
+    ui.formStatus.textContent = 'Please set your Formspree form ID in index.html before submitting.';
+    return;
+  }
+
   try {
     const formData = new FormData(ui.contactForm);
     const response = await fetch(ui.contactForm.action, {
@@ -240,7 +258,7 @@ async function handleFormSubmit(event) {
     ui.contactForm.reset();
     ui.formStatus.textContent = 'Thanks! Your message has been sent.';
   } catch (error) {
-    ui.formStatus.textContent = 'Formspree is not connected yet. Replace the form action URL and try again.';
+    ui.formStatus.textContent = 'Failed to send message. Please check your connection and try again.';
   }
 }
 
@@ -261,12 +279,22 @@ async function init() {
     renderSemesters();
   });
 
+  if (ui.contactForm.action.endsWith('#')) {
+    ui.formStatus.textContent = 'Form is in setup mode. Add your Formspree form ID to enable submissions.';
+    ui.submitBtn.disabled = true;
+    ui.submitBtn.title = 'Configure Formspree form ID first';
+  }
+
   try {
     const response = await fetch('./data.json');
-    if (!response.ok) throw new Error('Unable to load data.json');
+    if (!response.ok) throw new Error(`HTTP_${response.status}`);
     state.data = await response.json();
   } catch (error) {
-    ui.loading.innerHTML = '<p>Could not load course data. Please ensure `data.json` is present when hosted.</p>';
+    if (String(error.message).startsWith('HTTP_')) {
+      ui.loading.textContent = 'Could not load course data because data.json was not found on the server.';
+    } else {
+      ui.loading.textContent = 'Could not load course data. If you opened this page with file://, start a local server (for example: python -m http.server) or host on GitHub Pages.';
+    }
     return;
   }
 
