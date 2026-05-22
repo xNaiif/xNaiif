@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Course Hub</title>
+  <meta name="description" content="A static course-sharing website for 10 engineering semesters." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" id="home-link">Engineering Course Hub</a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <p class="eyebrow">Engineering Students • 10 Semesters</p>
+      <h1>Share and access your course materials in one place</h1>
+      <p class="hero-subtitle">Browse semesters, open course files, and quickly search everything from a single page.</p>
+    </section>
+
+    <nav class="breadcrumb card" aria-label="Breadcrumb">
+      <button id="crumb-home" class="crumb active" type="button">Home</button>
+      <span class="crumb-sep">/</span>
+      <button id="crumb-semester" class="crumb" type="button" hidden></button>
+      <span id="crumb-semester-sep" class="crumb-sep" hidden>/</span>
+      <button id="crumb-course" class="crumb" type="button" hidden></button>
+    </nav>
+
+    <section class="search-panel card">
+      <label for="search-input" class="search-label">Search courses</label>
+      <input id="search-input" type="search" placeholder="Search by course code, name, or description..." autocomplete="off" />
+      <div id="search-results" class="search-results" aria-live="polite"></div>
+    </section>
+
+    <section id="loading" class="card">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+    </section>
+
+    <section id="semester-view" hidden>
+      <div class="section-header">
+        <h2>Semesters</h2>
+        <p id="semester-count"></p>
+      </div>
+      <div id="semester-grid" class="semester-grid"></div>
+    </section>
+
+    <section id="course-view" hidden>
+      <div class="section-header">
+        <h2 id="course-view-title"></h2>
+        <p id="course-view-count"></p>
+      </div>
+      <div id="course-list" class="course-list"></div>
+    </section>
+
+    <section id="file-view" hidden>
+      <article class="card course-detail">
+        <h2 id="course-title"></h2>
+        <p id="course-description"></p>
+        <div class="file-header">
+          <h3>Files</h3>
+          <span id="file-count"></span>
+        </div>
+        <div id="file-list" class="file-list"></div>
+      </article>
+    </section>
+
+    <section class="contact card" id="feedback">
+      <h2>Contact & Suggestions</h2>
+      <p>This form is ready for Formspree. Replace the action URL with your endpoint.</p>
+      <!-- Replace # with your Formspree endpoint (for example: https://formspree.io/f/abcxyz). -->
+      <form id="contact-form" action="#" method="POST">
+        <div class="form-grid">
+          <label>
+            Name
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+        </div>
+        <label>
+          Semester
+          <select name="semester" required>
+            <option value="">Select semester</option>
+            <option value="Semester 1">Semester 1</option>
+            <option value="Semester 2">Semester 2</option>
+            <option value="Semester 3">Semester 3</option>
+            <option value="Semester 4">Semester 4</option>
+            <option value="Semester 5">Semester 5</option>
+            <option value="Semester 6">Semester 6</option>
+            <option value="Semester 7">Semester 7</option>
+            <option value="Semester 8">Semester 8</option>
+            <option value="Semester 9">Semester 9</option>
+            <option value="Semester 10">Semester 10</option>
+          </select>
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="5" required placeholder="Share ideas, missing materials, or updates..."></textarea>
+        </label>
+        <button class="btn" type="submit">Send feedback</button>
+        <p id="form-status" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Engineering Course Hub</p>
+      <p>Static site • GitHub Pages ready • No backend required</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
