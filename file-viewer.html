@@ -56,13 +56,6 @@
   </main>
 
   <script>
-    const escapeHtml = (text = '') => String(text)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-
     const params = new URLSearchParams(window.location.search);
     const fileName = params.get('name') || 'Unknown file';
     const courseName = params.get('course') || 'Unknown course';
@@ -70,14 +63,30 @@
     const size = params.get('size') || 'Unknown';
     const date = params.get('date') || 'Unknown';
     const category = params.get('category') || '📦 Resources';
-    const fileUrl = params.get('url') || 'https://onedrive.live.com/';
+    function sanitizeOneDriveUrl(rawUrl) {
+      try {
+        const parsed = new URL(rawUrl || 'https://onedrive.live.com/');
+        const allowedHosts = new Set(['onedrive.live.com', '1drv.ms']);
+        if (parsed.protocol !== 'https:' || !allowedHosts.has(parsed.hostname)) {
+          return 'https://onedrive.live.com/';
+        }
+        return parsed.toString();
+      } catch (error) {
+        return 'https://onedrive.live.com/';
+      }
+    }
 
-    const downloadUrl = fileUrl.includes('?') ? `${fileUrl}&download=1` : `${fileUrl}?download=1`;
+    const fileUrl = sanitizeOneDriveUrl(params.get('url'));
+    const downloadUrl = (() => {
+      const parsed = new URL(fileUrl);
+      parsed.searchParams.set('download', '1');
+      return parsed.toString();
+    })();
 
     document.title = `${fileName} • File Viewer`;
-    document.getElementById('viewer-file-name').innerHTML = escapeHtml(fileName);
-    document.getElementById('viewer-course-name').innerHTML = escapeHtml(courseName);
-    document.getElementById('viewer-preview-text').innerHTML = `You are viewing <strong>${escapeHtml(fileName)}</strong>. Use the actions below to preview in OneDrive or download it.`;
+    document.getElementById('viewer-file-name').textContent = fileName;
+    document.getElementById('viewer-course-name').textContent = courseName;
+    document.getElementById('viewer-preview-text').textContent = `You are viewing ${fileName}. Use the actions below to preview in OneDrive or download it.`;
     document.getElementById('viewer-type').textContent = type;
     document.getElementById('viewer-size').textContent = size;
     document.getElementById('viewer-date').textContent = date;
