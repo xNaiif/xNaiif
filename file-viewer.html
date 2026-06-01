@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Viewer • Engineering Course Hub</title>
+  <meta name="description" content="Preview file details before opening OneDrive download links." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Engineering Course Hub</a>
+      <a class="file-viewer-back" href="index.html">← Back to courses</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card file-viewer-page">
+      <p class="eyebrow">File Viewer</p>
+      <h1 id="viewer-file-name">File</h1>
+      <p class="meta" id="viewer-course-name"></p>
+
+      <div class="file-preview card">
+        <h2>Preview Information</h2>
+        <p id="viewer-preview-text" class="meta"></p>
+      </div>
+
+      <div class="viewer-meta-grid">
+        <article class="card viewer-meta-item">
+          <h3>Type</h3>
+          <p id="viewer-type"></p>
+        </article>
+        <article class="card viewer-meta-item">
+          <h3>Size</h3>
+          <p id="viewer-size"></p>
+        </article>
+        <article class="card viewer-meta-item">
+          <h3>Date</h3>
+          <p id="viewer-date"></p>
+        </article>
+        <article class="card viewer-meta-item">
+          <h3>Category</h3>
+          <p id="viewer-category"></p>
+        </article>
+      </div>
+
+      <div class="viewer-actions">
+        <a id="preview-link" class="file-link" href="#" target="_blank" rel="noopener noreferrer">Preview on OneDrive</a>
+        <a id="download-link" class="file-link" href="#" target="_blank" rel="noopener noreferrer">Download from OneDrive</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const escapeHtml = (text = '') => String(text)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+
+    const params = new URLSearchParams(window.location.search);
+    const fileName = params.get('name') || 'Unknown file';
+    const courseName = params.get('course') || 'Unknown course';
+    const type = params.get('type') || 'Unknown';
+    const size = params.get('size') || 'Unknown';
+    const date = params.get('date') || 'Unknown';
+    const category = params.get('category') || '📦 Resources';
+    const fileUrl = params.get('url') || 'https://onedrive.live.com/';
+
+    const downloadUrl = fileUrl.includes('?') ? `${fileUrl}&download=1` : `${fileUrl}?download=1`;
+
+    document.title = `${fileName} • File Viewer`;
+    document.getElementById('viewer-file-name').innerHTML = escapeHtml(fileName);
+    document.getElementById('viewer-course-name').innerHTML = escapeHtml(courseName);
+    document.getElementById('viewer-preview-text').innerHTML = `You are viewing <strong>${escapeHtml(fileName)}</strong>. Use the actions below to preview in OneDrive or download it.`;
+    document.getElementById('viewer-type').textContent = type;
+    document.getElementById('viewer-size').textContent = size;
+    document.getElementById('viewer-date').textContent = date;
+    document.getElementById('viewer-category').textContent = category;
+    document.getElementById('preview-link').href = fileUrl;
+    document.getElementById('download-link').href = downloadUrl;
+  </script>
+</body>
+</html>
