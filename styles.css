@@ -175,6 +175,30 @@ body.dark .search-item mark { background: #854d0e; color: #fff; }
 .meta { color: var(--muted); font-size: 0.9rem; }
 .course-list, .file-list { display: grid; gap: 0.7rem; }
 
+.file-category {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.9rem;
+  background: color-mix(in oklab, var(--surface), var(--surface-alt) 35%);
+}
+
+.file-category-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.file-category-header h4 {
+  margin: 0;
+}
+
+.file-category-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
 .file-row {
   display: flex;
   align-items: center;
@@ -202,12 +226,54 @@ body.dark .search-item mark { background: #854d0e; color: #fff; }
 }
 
 .file-link {
+  border: 0;
   text-decoration: none;
   color: #fff;
   background: linear-gradient(90deg, var(--primary), var(--primary-2));
   padding: .45rem .8rem;
   border-radius: 10px;
   font-weight: 600;
+}
+
+.file-viewer-back {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.file-viewer-page h1 {
+  margin: 0.4rem 0;
+}
+
+.file-preview {
+  margin-top: 1rem;
+}
+
+.file-preview h2 {
+  margin-top: 0;
+}
+
+.viewer-meta-grid {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 1fr;
+}
+
+.viewer-meta-item h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
+}
+
+.viewer-meta-item p {
+  margin: 0;
+}
+
+.viewer-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 .form-grid {
@@ -254,6 +320,7 @@ body.dark .search-item mark { background: #854d0e; color: #fff; }
 @media (min-width: 768px) {
   .semester-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: repeat(2, 1fr); }
+  .viewer-meta-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 1024px) {

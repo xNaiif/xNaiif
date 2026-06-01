@@ -7,7 +7,8 @@ A complete static course-sharing website for engineering students across **10 se
 - 10 semesters with multiple courses per semester
 - 50+ sample engineering courses (easy to edit)
 - Real-time search across all courses
-- Course details with file listings (OneDrive links)
+- Course details with categorized file listings
+- Dedicated file viewer page before opening OneDrive links
 - Dark mode with saved preference
 - Responsive UI (mobile, tablet, desktop)
 - Breadcrumb navigation
@@ -17,6 +18,7 @@ A complete static course-sharing website for engineering students across **10 se
 ## File Structure
 
 - `/index.html` — single-page app layout
+- `/file-viewer.html` — file details + OneDrive preview/download actions
 - `/styles.css` — responsive styling and dark mode
 - `/app.js` — rendering, navigation, search, and form logic
 - `/data.json` — course data source (easy to maintain)
@@ -50,8 +52,10 @@ Each semester uses this structure:
       "files": [
         {
           "name": "Lecture Notes",
+          "category": "📚 Chapters / Lecture Notes",
           "type": "pdf",
           "size": "2.5 MB",
+          "date": "2026-01-01",
           "url": "https://onedrive.live.com/..."
         }
       ]
@@ -65,6 +69,8 @@ You can:
 - Rename courses and descriptions
 - Add/remove courses in any semester
 - Add/remove files in each course
+- Assign categories per file (chapters, assignments, exams, videos, resources)
+- Add `date` metadata for file viewer details
 
 ## Add OneDrive Links
 

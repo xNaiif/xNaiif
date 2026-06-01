@@ -52,6 +52,50 @@ function detectFileType(type = '') {
   return { icon: 'FILE', label: 'File' };
 }
 
+const CATEGORY_ORDER = [
+  '📚 Chapters / Lecture Notes',
+  '📝 Assignments',
+  '📊 Exams / Tests',
+  '🎥 Videos',
+  '📦 Resources',
+];
+
+function getCourseFiles(course) {
+  return Array.isArray(course?.files) ? course.files : [];
+}
+
+function groupFilesByCategory(files) {
+  const grouped = new Map();
+
+  files.forEach((file) => {
+    const category = file.category || '📦 Resources';
+    if (!grouped.has(category)) grouped.set(category, []);
+    grouped.get(category).push(file);
+  });
+
+  return [...grouped.entries()]
+    .sort(([a], [b]) => {
+      const aIndex = CATEGORY_ORDER.indexOf(a);
+      const bIndex = CATEGORY_ORDER.indexOf(b);
+      return (aIndex === -1 ? CATEGORY_ORDER.length : aIndex) - (bIndex === -1 ? CATEGORY_ORDER.length : bIndex);
+    })
+    .map(([name, categoryFiles]) => ({ name, files: categoryFiles }));
+}
+
+function buildFileViewerUrl(course, file) {
+  const params = new URLSearchParams({
+    course: `${course.id} — ${course.name}`,
+    name: file.name || '',
+    type: file.type || '',
+    size: file.size || '',
+    date: file.date || '',
+    category: file.category || '📦 Resources',
+    url: file.url || '',
+  });
+
+  return `file-viewer.html?${params.toString()}`;
+}
+
 function applyTheme() {
   const saved = localStorage.getItem('theme') || 'light';
   document.body.classList.toggle('dark', saved === 'dark');
@@ -135,7 +179,7 @@ function renderCourses(semesterKey) {
     <article class="course-card" data-course-id="${course.id}">
       <h3>${course.id} — ${escapeHtml(course.name)}</h3>
       <p class="meta">${escapeHtml(course.description)}</p>
-      <p class="meta">${course.files.length} files</p>
+      <p class="meta">${getCourseFiles(course).length} files</p>
     </article>
   `).join('');
 
@@ -152,27 +196,40 @@ function renderFiles(course) {
   updateBreadcrumb();
   setView('files');
 
+  const files = getCourseFiles(course);
+  const groupedFiles = groupFilesByCategory(files);
+
   ui.courseTitle.textContent = `${course.id} — ${course.name}`;
   ui.courseDescription.textContent = course.description;
-  ui.fileCount.textContent = `${course.files.length} file(s)`;
+  ui.fileCount.textContent = `${files.length} file(s)`;
 
-  ui.fileList.innerHTML = course.files.map((file) => {
+  ui.fileList.innerHTML = groupedFiles.map((categoryGroup) => `
+    <section class="file-category">
+      <div class="file-category-header">
+        <h4>${escapeHtml(categoryGroup.name)}</h4>
+        <span class="meta">${categoryGroup.files.length} file(s)</span>
+      </div>
+      <div class="file-category-list">
+        ${categoryGroup.files.map((file) => {
     const kind = detectFileType(file.type);
     return `
-      <article class="file-card">
-        <div class="file-row">
-          <div class="file-left">
-            <div class="file-icon" title="${kind.label}">${kind.icon}</div>
-            <div>
-              <p><strong>${escapeHtml(file.name)}</strong></p>
-              <p class="meta">${escapeHtml(file.type)} • ${escapeHtml(file.size)}</p>
+          <article class="file-card">
+            <div class="file-row">
+              <div class="file-left">
+                <div class="file-icon" title="${kind.label}">${kind.icon}</div>
+                <div>
+                  <p><strong>${escapeHtml(file.name)}</strong></p>
+                  <p class="meta">${escapeHtml(file.type)} • ${escapeHtml(file.size)} • ${escapeHtml(file.date || 'N/A')}</p>
+                </div>
+              </div>
+              <a class="file-link" href="${buildFileViewerUrl(course, file)}">View</a>
             </div>
-          </div>
-          <a class="file-link" href="${escapeHtml(file.url)}" target="_blank" rel="noopener noreferrer">Open</a>
-        </div>
-      </article>
-    `;
-  }).join('');
+          </article>
+        `;
+  }).join('')}
+      </div>
+    </section>
+  `).join('');
 }
 
 function highlight(text, query) {
